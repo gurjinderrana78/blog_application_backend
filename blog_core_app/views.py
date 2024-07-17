@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.core.paginator import Paginator
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,25 +6,41 @@ from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-
 class Posts(APIView):
-    http_method_names = ['get', 'post', 'put', 'delete']
+    http_method_names = ['get', 'post']
+    pagination_class = Paginator  # Set default pagination class
+
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
         return [IsAuthenticated()]
-    def get(self, request, id=None, *args, **kwargs):
-        if id is not None:
-            try:
-                individual_post = Post.objects.get(id=id)
-                serializer = PostSerializer(individual_post)
-                return Response(serializer.data)
-            except Post.DoesNotExist:
-                return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            all_posts = Post.objects.all()
-            serializer = PostSerializer(all_posts, many=True)
-            return Response(serializer.data)
+
+    def get(self, request, *args, **kwargs):
+        # Retrieve all posts or filter based on query parameters
+        posts = Post.objects.all()  # Adjust filtering logic as needed
+
+        # Apply pagination using request parameters
+        page_size = request.GET.get('page_size', 10)  # Default to 10 posts per page
+        page_number = request.GET.get('page', 1)  # Default to page 1
+
+        paginator = Paginator(posts, page_size)
+        page_obj = paginator.get_page(page_number)
+
+        serializer = PostSerializer(page_obj, many=True)
+
+        # Create a well-structured response dictionary with pagination data
+        response_data = {
+            'data': serializer.data,
+            'pagination': {
+                'total_pages': paginator.num_pages,
+                'current_page': page_obj.number,
+                'has_prev': page_obj.has_previous(),
+                'has_next': page_obj.has_next(),
+            }
+        }
+
+        return Response(response_data)
+
 
     def post(self, request, *args, **kwargs):
         serializer = PostSerializer(data=request.data)
