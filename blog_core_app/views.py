@@ -66,14 +66,14 @@ class Comments(APIView):
         else:
             return [IsAuthenticated()]
         
-    def get(self, request, post_id=None, *args, **kwargs):
-        if post_id is not None:
+    def get(self, request, id=None, *args, **kwargs):
+        if id is not None:
             try:
-                post = Post.objects.get(id=post_id)
+                post = Post.objects.get(id=id)
             except Post.DoesNotExist:
                 return Response({'error': 'Post Does not exist'}, status=status.HTTP_404_NOT_FOUND)
             try:
-                all_comments = Comment.objects.filter(post_id=post_id)
+                all_comments = Comment.objects.filter(post_id=id)
                 serializer = CommentSerializer(all_comments, many = True)
                 return Response(serializer.data)
             except Comment.DoesNotExist:
@@ -87,17 +87,18 @@ class Comments(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def delete(self, request, comment_id = None, *args, **kwargs):
-        if comment_id is not None:
+    def delete(self, request, id=None, *args, **kwargs):
+        if id is not None:
             try:
-                comment = Comment.objects.get(id= comment_id)
+                comment = Comment.objects.get(id= id)
+                deleted = comment.delete()
+                if deleted:
+                   return Response({'message': 'Comment successfully deleted'}, status=status.HTTP_204_NO_CONTENT)
+                else:
+                   return Response({'error': 'Failed to delete comment'}, status=status.HTTP_400_BAD_REQUEST)
             except Comment.DoesNotExist:
                 return Response({'error': 'Comment Not found'}, status=status.HTTP_404_NOT_FOUND)
-        deleted = comment.delete()
-        if deleted:
-           return Response({'message': 'Comment successfully deleted'}, status=status.HTTP_204_NO_CONTENT)
-        else:
-           return Response({'error': 'Failed to delete comment'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Comment Not found'}, status=status.HTTP_404_NOT_FOUND)
         
 
     

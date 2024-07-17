@@ -21,7 +21,7 @@ urlpatterns = [
     path('login/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('posts/', Posts.as_view(), name='get_all_posts'),
     path('posts/<int:id>/', Posts.as_view(), name='get_specific_post'),
-    path('comments/<int:post_id>/', Comments.as_view(), name='get_specific_post_comments'),
-    path('comments/', Comments.as_view(), name='get_specific_post_comments'), 
+    path('comments/', Comments.as_view(), name='comment_on_post'),
+    path('comments/<int:id>/', Comments.as_view(), name='get_specific_post_comments_or_delete_specific_comment'), 
 ]
 
