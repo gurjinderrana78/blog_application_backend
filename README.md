@@ -15,7 +15,7 @@ This is a Django-based backend for a blog application, providing APIs for managi
 1. **Clone the repository**
     ```sh
     git clone https://github.com/gurjinderrana78/blog_application_backend.git
-    cd blog-backend
+    cd blog_application_backend
     ```
 
 2. **Create and activate a virtual environment**
@@ -34,7 +34,11 @@ This is a Django-based backend for a blog application, providing APIs for managi
     python manage.py migrate
     ```
 
-5. **Run the development server**
+5. **Create a superuser**
+    ```sh
+    python manage.py createsuperuser
+    ```
+6. **Run the development server**
     ```sh
     python manage.py runserver
     ```
@@ -86,6 +90,7 @@ This is a Django-based backend for a blog application, providing APIs for managi
     Query Parameters:
     - `page`: Page number (default: 1)
     - `page_size`: Number of posts per page (default: 10)
+    
     Headers(Optional Parameters):
     ```http
     Authorization: Bearer <access_token>
