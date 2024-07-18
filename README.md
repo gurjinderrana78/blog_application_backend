@@ -15,7 +15,7 @@ This is a Django-based backend for a blog application, providing APIs for managi
 1. **Clone the repository**
     ```sh
     git clone https://github.com/gurjinderrana78/blog_application_backend.git
-    cd blog_application_backend/blog_backend
+    cd blog_application_backend
     ```
 
 2. **Create and activate a virtual environment**
