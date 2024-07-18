@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -18,3 +19,14 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.author_name + ' - ' + str(self.post_id)
+    
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    liked_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'post')  # Ensure one like per user per post
+
+    def __str__(self):
+        return f'{self.user.username} liked {self.post.id}'

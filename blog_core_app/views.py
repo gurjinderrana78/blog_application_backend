@@ -2,12 +2,12 @@ from django.core.paginator import Paginator
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Post, Comment
+from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class Posts(APIView):
-    http_method_names = ['get', 'post']
+    http_method_names = ['get', 'post', 'put', 'delete']
     pagination_class = Paginator  # Set default pagination class
 
     def get_permissions(self):
@@ -17,7 +17,7 @@ class Posts(APIView):
 
     def get(self, request, *args, **kwargs):
         # Retrieve all posts or filter based on query parameters
-        posts = Post.objects.all()  # Adjust filtering logic as needed
+        posts = Post.objects.all()
 
         # Apply pagination using request parameters
         page_size = request.GET.get('page_size', 10)  # Default to 10 posts per page
@@ -26,7 +26,7 @@ class Posts(APIView):
         paginator = Paginator(posts, page_size)
         page_obj = paginator.get_page(page_number)
 
-        serializer = PostSerializer(page_obj, many=True)
+        serializer = PostSerializer(page_obj, many=True,context={'request': request})
 
         # Create a well-structured response dictionary with pagination data
         response_data = {
@@ -117,4 +117,19 @@ class Comments(APIView):
         return Response({'error': 'Comment Not found'}, status=status.HTTP_404_NOT_FOUND)
         
 
-    
+class LikePostView(APIView):
+    http_method_names = ['get', 'post', 'put', 'delete']
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, post_id):
+        post = Post.objects.get(id=post_id)
+        user = request.user
+
+        # Check if the user has already liked the post
+        if Like.objects.filter(user=user, post=post).exists():
+            Like.objects.filter(user=user, post=post).delete()
+            return Response({"message": "You have unliked this post."}, status=status.HTTP_204_NO_CONTENT)
+
+        # Create a new like
+        Like.objects.create(user=user, post=post)
+        return Response({"message": "Post liked."}, status=status.HTTP_201_CREATED)   

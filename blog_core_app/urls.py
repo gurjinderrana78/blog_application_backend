@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import Posts, Comments
+from .views import Posts, Comments, LikePostView
 urlpatterns = [
     path('login/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('login/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
@@ -23,5 +23,6 @@ urlpatterns = [
     path('posts/<int:id>/', Posts.as_view(), name='get_specific_post'),
     path('comments/', Comments.as_view(), name='comment_on_post'),
     path('comments/<int:id>/', Comments.as_view(), name='get_specific_post_comments_or_delete_specific_comment'), 
+    path('like/<int:post_id>/', LikePostView.as_view(), name='like-post')
 ]
 
