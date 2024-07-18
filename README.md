@@ -86,6 +86,7 @@ This is a Django-based backend for a blog application, providing APIs for managi
     Query Parameters:
     - `page`: Page number (default: 1)
     - `page_size`: Number of posts per page (default: 10)
+    
     Headers(Optional Parameters):
     ```http
     Authorization: Bearer <access_token>
