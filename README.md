@@ -34,7 +34,11 @@ This is a Django-based backend for a blog application, providing APIs for managi
     python manage.py migrate
     ```
 
-5. **Run the development server**
+5. **Create a superuser**
+    ```sh
+    python manage.py createsuperuser
+    ```
+6. **Run the development server**
     ```sh
     python manage.py runserver
     ```
